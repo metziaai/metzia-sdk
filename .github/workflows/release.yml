@@ -1,0 +1,73 @@
+# The release. A push to main that changes the SDK or a changeset runs it, and
+# the Changesets action then does one of two things:
+#
+# 1. A changeset is pending. The action opens or updates the version pull
+#    request, "chore: release the SDK". `npm run version-packages` moves the
+#    version in package.json and src/version.ts, writes CHANGELOG.md, updates
+#    the lockfile, and deletes the changesets.
+# 2. No changeset is pending, which is the push that merges the version pull
+#    request. The action publishes each version npm does not hold yet, pushes
+#    the tag, and creates the GitHub release.
+#
+# The repository variable SDK_RELEASE turns each part on. Unset, the workflow
+# skips. `version` opens the version pull request and publishes nothing.
+# `publish` does both. npm accepts a provenance statement only from a public
+# repository, and package.json asks for one on every publish.
+
+name: Release
+
+on:
+  push:
+    branches: [main]
+  # Run it by hand after changing SDK_RELEASE, so a version already on main
+  # publishes with no new push.
+  workflow_dispatch:
+
+# Two runs at once would race on the version branch and on the publish.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: ${{ vars.SDK_RELEASE == 'version' || vars.SDK_RELEASE == 'publish' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      # The version commit, the tag, and the GitHub release.
+      contents: write
+      # The version pull request.
+      pull-requests: write
+      # The npm provenance statement.
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - name: Test the SDK
+        run: |
+          set -euo pipefail
+          npm run typecheck
+          npm run build
+          npm test
+          npm run smoke
+
+      # An empty publish script publishes nothing, so SDK_RELEASE=version stops
+      # after the version pull request.
+      - uses: changesets/action@v2
+        with:
+          version-script: npm run version-packages
+          publish-script: ${{ vars.SDK_RELEASE == 'publish' && 'npm run release' || '' }}
+          pr-title: "chore: release the SDK"
+          commit-message: "chore: release the SDK"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          # The action writes it to .npmrc for the publish. Only the publish reads it.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

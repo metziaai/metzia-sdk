@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    // `DOM` supplies the `fetch`, `Response`, `Headers`, and `URL` types. The
+    // package takes no `@types/node`, because it must compile for a browser
+    // runtime and for Node, and it reads no Node API.
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "declaration": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    // One test imports `package.json` to prove `SDK_VERSION` equals the
+    // manifest version. No source file imports it, so no manifest reaches the
+    // bundle.
+    "resolveJsonModule": true,
+    // An empty list stops TypeScript loading any installed `@types` package.
+    // The SDK must not compile against Node globals.
+    "types": []
+  },
+  // The two config files are source. Without them here, nothing checks the
+  // build config or the test config until they break at run time.
+  "include": ["src", "tsup.config.ts", "vitest.config.mts"]
+}
