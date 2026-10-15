@@ -45,9 +45,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      # registry-url writes an .npmrc that reads NODE_AUTH_TOKEN, the login the
+      # publish uses. The Changesets action does not write one itself.
       - uses: actions/setup-node@v7
         with:
           node-version: 22
+          registry-url: https://registry.npmjs.org
 
       - run: npm ci
 
@@ -69,5 +72,5 @@ jobs:
           commit-message: "chore: release the SDK"
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          # The action writes it to .npmrc for the publish. Only the publish reads it.
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # The .npmrc that setup-node wrote reads it. Only the publish needs it.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
