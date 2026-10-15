@@ -335,9 +335,15 @@ npm test            # unit tests
 npm run smoke       # loads the built package by name under import and require
 ```
 
-Add a changeset to every pull request that changes `src` or `bin`. `.changeset/README.md` holds the
-rules. A merge to `main` opens the release pull request, and merging that publishes to npm with a
-provenance statement.
+## Contributing
+
+The Metzia team develops the SDK alongside the platform, and this repository mirrors each change.
+Open an issue for a bug or a request. A pull request is welcome, and the team applies it upstream,
+so it reaches `main` through the next sync rather than a merge here.
+
+A release publishes to npm when the version in `package.json` changes on `main`. Each release
+carries a provenance statement that links it to the commit and the build. Check it with
+`npm audit signatures`. `CHANGELOG.md` lists every release.
 
 ## License
 
