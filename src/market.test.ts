@@ -30,21 +30,21 @@ afterEach(() => {
 });
 
 describe("new Market", () => {
-  it("throws on an empty key and names PLATFORM_KEY", () => {
-    expect(() => new Market("")).toThrow(/PLATFORM_KEY/);
+  it("throws on an empty key and names METZIA_KEY", () => {
+    expect(() => new Market("")).toThrow(/METZIA_KEY/);
   });
 
-  it("throws on a whitespace key and names PLATFORM_KEY", () => {
-    expect(() => new Market("   ")).toThrow(/PLATFORM_KEY/);
+  it("throws on a whitespace key and names METZIA_KEY", () => {
+    expect(() => new Market("   ")).toThrow(/METZIA_KEY/);
   });
 
-  it("throws on a missing key and names PLATFORM_KEY", () => {
-    expect(() => new Market(undefined)).toThrow(/PLATFORM_KEY/);
+  it("throws on a missing key and names METZIA_KEY", () => {
+    expect(() => new Market(undefined)).toThrow(/METZIA_KEY/);
   });
 
   it("states what to do in the message", () => {
     expect(() => new Market("")).toThrow(
-      "Market needs a platform key. Set PLATFORM_KEY and pass process.env.PLATFORM_KEY to new Market().",
+      "Market needs a Metzia seller key. Set METZIA_KEY and pass process.env.METZIA_KEY to new Market().",
     );
   });
 

@@ -37,17 +37,17 @@ because the signature covers the exact bytes.
 
 ## Use
 
-The constructor takes one platform key. The seller reads the key from the environment and passes
+The constructor takes one Metzia seller key. The seller reads the key from the environment and passes
 it in. The library reads no environment variable itself.
 
 ```ts
 import { Market } from "@metzia/sdk";
 
-const market = new Market(process.env.PLATFORM_KEY);
+const market = new Market(process.env.METZIA_KEY);
 ```
 
 An empty key throws. A missing key is a configuration defect, and the message names
-`PLATFORM_KEY`.
+`METZIA_KEY`.
 
 The default host is `https://api.metzia.ai`. Local work overrides it:
 

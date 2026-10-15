@@ -11,8 +11,13 @@
 #
 # The repository variable SDK_RELEASE turns each part on. Unset, the workflow
 # skips. `version` opens the version pull request and publishes nothing.
-# `publish` does both. npm accepts a provenance statement only from a public
-# repository, and package.json asks for one on every publish.
+# `publish` does both.
+#
+# The publish holds no npm token. npm trusts this workflow directly (Trusted
+# Publishing): GitHub hands the job a short-lived OIDC identity, and npm checks
+# it against the trusted publisher set on the package, metziaai/metzia-sdk and
+# release.yml. Renaming this file breaks that link until the npm setting moves
+# with it. The same identity signs the provenance statement.
 
 name: Release
 
@@ -45,12 +50,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      # registry-url writes an .npmrc that reads NODE_AUTH_TOKEN, the login the
-      # publish uses. The Changesets action does not write one itself.
+      # Node 24 ships npm 11, and Trusted Publishing needs npm 11.5.1 or later.
       - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
+
+      - name: Check the npm version
+        run: |
+          node -e "const [a,b,c]=process.argv[1].split('.').map(Number); if (a<11||(a===11&&(b<5||(b===5&&c<1)))) { console.error('npm '+process.argv[1]+' cannot use Trusted Publishing. It needs 11.5.1 or later.'); process.exit(1) }" "$(npm --version)"
 
       - run: npm ci
 
@@ -72,5 +80,3 @@ jobs:
           commit-message: "chore: release the SDK"
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          # The .npmrc that setup-node wrote reads it. Only the publish needs it.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

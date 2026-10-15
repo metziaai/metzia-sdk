@@ -25,7 +25,7 @@ import { createWebhookHandler, type WebhookSurface } from "./webhooks";
 export const DEFAULT_BASE_URL = "https://api.metzia.ai";
 
 export const MISSING_KEY_MESSAGE =
-  "Market needs a platform key. Set PLATFORM_KEY and pass process.env.PLATFORM_KEY to new Market().";
+  "Market needs a Metzia seller key. Set METZIA_KEY and pass process.env.METZIA_KEY to new Market().";
 
 /** Names the rejected value, so the reader sees the mistake in one line. */
 export function invalidBaseUrlMessage(baseUrl: string): string {

@@ -57,8 +57,8 @@ function check(label, entry) {
 
   assert.throws(
     () => new Market(""),
-    /PLATFORM_KEY/,
-    `${label}: an empty key must throw and name PLATFORM_KEY.`,
+    /METZIA_KEY/,
+    `${label}: an empty key must throw and name METZIA_KEY.`,
   );
 
   // The receiver is a setup surface, not a public secret. Without a configured
