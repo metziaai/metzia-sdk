@@ -7,4 +7,4 @@
  * runs `changeset version`, then `scripts/sync-sdk-version.mjs` copies the
  * manifest version here.
  */
-export const SDK_VERSION = "0.1.0";
+export const SDK_VERSION = "0.1.1";
