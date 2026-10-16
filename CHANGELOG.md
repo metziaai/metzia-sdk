@@ -1,5 +1,11 @@
 # @metzia/sdk
 
+## 0.1.2
+
+### Patch Changes
+
+- 85db412: The package README now describes the public repository and how to contribute, and the package manifest drops the release scripts it no longer uses. No code changes.
+
 ## 0.1.1
 
 ### Patch Changes

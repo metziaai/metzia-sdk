@@ -5,4 +5,4 @@
  * manifest in the bundle. `version.test.ts` reads the manifest instead and
  * fails when the two numbers differ. The release tooling moves both.
  */
-export const SDK_VERSION = "0.1.1";
+export const SDK_VERSION = "0.1.2";
