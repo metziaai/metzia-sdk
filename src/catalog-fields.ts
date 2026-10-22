@@ -4,7 +4,12 @@
  * This module deliberately has no imports. The application imports this source
  * file directly, so the constants cannot drift before the SDK package is built.
  */
-export const SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+/**
+ * The hyphen in the class is escaped because HTML compiles a `pattern` with the
+ * `v` flag, where a bare hyphen in a class is a syntax error and the browser
+ * then drops the rule. The escape means the same with no flag and with `u`.
+ */
+export const SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$/;
 
 /**
  * A limit key is an identifier, because a product limit row carries it by name.
