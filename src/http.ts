@@ -203,8 +203,8 @@ async function requestOnce<T>(
   }
 
   // `T` is the caller's claim about the shape of the body. The SDK validates
-  // nothing, here or in the empty case above. Issue 101 adds the schema that
-  // turns the claim into a check.
+  // nothing, here or in the empty case above, so a wrong key reads as
+  // `undefined`. A typed method with a schema is the way to check an answer.
   try {
     return { ok: true, status, body: JSON.parse(text) as T, ...tag };
   } catch {
