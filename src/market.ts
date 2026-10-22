@@ -29,8 +29,11 @@ export const MISSING_KEY_MESSAGE =
 
 /** Names the rejected value, so the reader sees the mistake in one line. */
 export function invalidBaseUrlMessage(baseUrl: string): string {
-  return `Market cannot use the base URL "${baseUrl}". Pass an absolute URL with no query and no fragment, for example ${DEFAULT_BASE_URL} or http://localhost:3000.`;
+  return `Market cannot use the base URL "${baseUrl}". Pass an absolute https URL with no query and no fragment, for example ${DEFAULT_BASE_URL}. Plain http is allowed for localhost only, for example http://localhost:3000.`;
 }
+
+/** The hosts where plain http carries the key no further than this machine. */
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
 /** Names the rejected time to live. */
 export function invalidVocabularyTtlMessage(ttlMs: unknown): string {
@@ -66,8 +69,9 @@ export function invalidHandlerMessage(event: string, handler: unknown): string {
  *
  * A base URL the parser rejects is a caller configuration defect, so it throws
  * at construction. Without this check an empty string reaches `fetch` and the
- * seller reads a network failure on every call. `src/cli.ts` reuses it for
- * `--base-url`. `src/index.ts` does not export it.
+ * seller reads a network failure on every call. It refuses plain http to any
+ * host but this machine, because every call carries the key. `src/cli.ts`
+ * reuses it for `--base-url`. `src/index.ts` does not export it.
  */
 export function checkBaseUrl(baseUrl: string): string {
   let parsed: URL;
@@ -81,6 +85,13 @@ export function checkBaseUrl(baseUrl: string): string {
   // A query or a fragment on the base disappears the moment a path joins it.
   // The caller must see that now, not lose a parameter silently later.
   if (parsed.search !== "" || parsed.hash !== "") {
+    throw new Error(invalidBaseUrlMessage(baseUrl));
+  }
+
+  // Every call sends the seller key in the Authorization header, so a plain
+  // http host would receive it in clear text. The CLI reads this rule too.
+  const local = parsed.protocol === "http:" && LOCAL_HOSTS.has(parsed.hostname);
+  if (parsed.protocol !== "https:" && !local) {
     throw new Error(invalidBaseUrlMessage(baseUrl));
   }
 

@@ -61,7 +61,7 @@ describe("new Market", () => {
 
   it("throws on an empty base URL and says what to pass", () => {
     expect(() => new Market(KEY, { baseUrl: "" })).toThrow(
-      /Pass an absolute URL with no query and no fragment/,
+      /Pass an absolute https URL with no query and no fragment/,
     );
   });
 
@@ -76,6 +76,20 @@ describe("new Market", () => {
       /Market cannot use the base URL/,
     );
   });
+
+  it.each(["http://api.metzia.ai", "http://sandbox.metzia.ai", "http://10.0.0.5:3000", "ftp://api.metzia.ai"])(
+    "throws on %s, because every call would carry the key in clear text",
+    (baseUrl) => {
+      expect(() => new Market(KEY, { baseUrl })).toThrow(/Plain http is allowed for localhost only/);
+    },
+  );
+
+  it.each(["http://localhost:3000", "http://127.0.0.1:3000", "http://[::1]:3000", "https://sandbox.metzia.ai"])(
+    "takes %s",
+    (baseUrl) => {
+      expect(new Market(KEY, { baseUrl }).baseUrl).toBe(baseUrl);
+    },
+  );
 
   it("throws on a base URL that carries a fragment", () => {
     expect(() => new Market(KEY, { baseUrl: `${DEFAULT_BASE_URL}#top` })).toThrow(

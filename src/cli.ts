@@ -101,19 +101,14 @@ function receiverUrl(value: string): URL | string {
   return parsed;
 }
 
-const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
-
-/** The usage error of a report host, or null. The report carries the key, so http is for this machine only. */
+/** The usage error of a report host, or null. `checkBaseUrl` holds the https rule. */
 function baseUrlProblem(value: string): string | null {
   try {
     checkBaseUrl(value);
+    return null;
   } catch (error) {
     return error instanceof Error ? error.message : String(error);
   }
-  const parsed = new URL(value);
-  if (parsed.protocol === "https:") return null;
-  if (parsed.protocol === "http:" && LOCAL_HOSTS.has(parsed.hostname)) return null;
-  return `The --base-url "${value}" must use https, because the report carries your key. Plain http is allowed for localhost only.`;
 }
 
 async function report(
