@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   BILLING_INTERVALS,
   DELIVERS,
+  HIDDEN_CHARACTER,
   LIMIT_KEY_PATTERN,
   LISTING_COUNT_LIMITS,
   PRICE_INTERVALS,
@@ -24,12 +25,29 @@ const {
 
 const nonNegativeInteger = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 
+/**
+ * A short listing field: trimmed, not empty, bounded, and with no control or
+ * invisible character. A reviewer cannot see an invisible character, and the
+ * buyer agent reads it. The platform refuses the same set.
+ */
+function shortText(limit: number) {
+  return z
+    .string()
+    .trim()
+    .min(1)
+    .max(limit)
+    .refine((value) => !HIDDEN_CHARACTER.test(value), {
+      error: "The value must hold no control character and no invisible character.",
+      params: { rule: "hidden_character" },
+    });
+}
+
 const pricePointSchema = z
   .object({
     amountMicros: nonNegativeInteger,
-    unitName: z.string().trim().min(1).max(PRICE_POINT_TEXT_LIMITS.unitName),
+    unitName: shortText(PRICE_POINT_TEXT_LIMITS.unitName),
     interval: z.enum(PRICE_INTERVALS).nullable().default(null),
-    plan: z.string().trim().min(1).max(PRICE_POINT_TEXT_LIMITS.plan).nullable().default(null),
+    plan: shortText(PRICE_POINT_TEXT_LIMITS.plan).nullable().default(null),
     tierMin: nonNegativeInteger.nullable().default(null),
     tierMax: nonNegativeInteger.nullable().default(null),
   })
@@ -154,8 +172,8 @@ export const limitsSchema = z
 
 const listingObject = z
   .object({
-    sku: z.string().trim().min(1).max(IDENTIFIER_LIMIT),
-    name: z.string().trim().min(1).max(IDENTIFIER_LIMIT),
+    sku: shortText(IDENTIFIER_LIMIT),
+    name: shortText(IDENTIFIER_LIMIT),
     categorySlug: z.string().regex(SLUG_PATTERN),
     pricingModel: z.enum(PRICING_MODELS),
     delivers: z.enum(DELIVERS),

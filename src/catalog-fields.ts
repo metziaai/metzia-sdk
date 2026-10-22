@@ -12,6 +12,19 @@
 export const SLUG_PATTERN = /^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$/;
 
 /**
+ * A character a short listing field refuses: the SKU, the name, the plan, and
+ * the unit name.
+ *
+ * Control characters break a line or repaint a terminal. Format characters and
+ * the other default ignorable code points render as nothing, so a reviewer
+ * cannot see them, and the Unicode tag block among them spells a hidden ASCII
+ * twin of any sentence that some models read. The line and paragraph
+ * separators break a line too. The prose fields strip the same set and record
+ * each removal, where these short fields refuse it.
+ */
+export const HIDDEN_CHARACTER = /[\p{Cc}\p{Cf}\p{Default_Ignorable_Code_Point}\u2028\u2029]/u;
+
+/**
  * A limit key is an identifier, because a product limit row carries it by name.
  * The platform checks the same rule, so the publish API and the SDK's local
  * check agree.
