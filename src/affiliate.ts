@@ -74,6 +74,9 @@ const SUBID_MACRO = /\{subid\}/i;
 // `Cf` holds the invisible format characters, for example a zero width space.
 const BLANK_OR_CONTROL = /[\s\p{Cc}\p{Cf}]/u;
 
+/** A control or an invisible format character. A program id holds neither. */
+const CONTROL_OR_FORMAT = /[\p{Cc}\p{Cf}]/u;
+
 /** Every macro slot of the stored grammar, in either case. */
 const ANY_MACRO = /\{(SUBID|DEST|CLICKID)\}/i;
 
@@ -234,7 +237,12 @@ function holdsMacroInFragment(template: string): boolean {
 
 export const registerSchema = z
   .object({
-    programId: z.string().trim().min(1).max(PROGRAM_ID_LIMIT),
+    programId: z
+      .string()
+      .trim()
+      .min(1)
+      .max(PROGRAM_ID_LIMIT)
+      .refine((value) => !CONTROL_OR_FORMAT.test(value), { error: "The program id must hold no control character." }),
     rate: z
       .int({ error: "State the rate as whole basis points. One percent is 100." })
       .min(1)
