@@ -224,7 +224,7 @@ a new key.
 needs the scope `affiliate_program:write` to register or disable, and `affiliate_program:read` to
 read. Those scopes are new, so a stored key holds neither, and a rotation copies the scopes a key
 already carries. An existing key therefore never gains one. An owner mints a new key that names
-them, on the seller portal page `/seller/keys` or with `POST /api/seller/keys` and a body that
+them, on the seller portal page `/portal/keys` or with `POST /api/seller/keys` and a body that
 states `label` and `scopes`.
 
 WARNING: new terms stop commission until staff approve them again. Read the program first, and
