@@ -1,6 +1,6 @@
 {
   "name": "@metzia/sdk",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "The official TypeScript seller SDK for the Metzia agentic-commerce marketplace.",
   "keywords": [
     "metzia",
